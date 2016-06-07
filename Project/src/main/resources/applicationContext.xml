@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true"
+	xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+  		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd
+  		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+  	
+	<!-- 用于加载SpringConfig -->
+	<context:component-scan base-package="com.toobye.common.framework.spring" />
+ 	
+ 	<!-- Spring组件扫描的起始路径（含子包）, 自动组件的名称是首字母小写的类名 -->
+ 	<!-- 用于加载DAO和Service层 -->
+ 	<context:component-scan base-package="com.toobye.mdb" />
+ 	
+ 	<!-- 解决异常BeanNotOfRequiredTypeException -->
+	<!-- Bean named '*' must be of type [*], but was actually of type [com.sun.proxy.$Proxy*] -->
+ 	<aop:aspectj-autoproxy proxy-target-class="true"/>
+ 	
+	<beans>
+         <import resource="mybatis-spring.xml"/>
+    </beans>
+ 	
+</beans>

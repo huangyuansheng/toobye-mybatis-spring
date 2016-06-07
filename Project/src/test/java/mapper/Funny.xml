@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="Funny">
+	<select id="getCount" parameterType="Funny" resultType="Integer">
+		SELECT COUNT(1) FROM ${mdb.prefix}_FUNNY
+		<where>
+			<if test="a != null"> and a = #{a} </if>
+			<if test="b != null"> and b = #{b} </if>
+			<if test="c != null"> and c = #{c} </if>
+		</where>
+	</select>
+
+	<select id="getList" parameterType="Funny" resultType="Funny" >
+		SELECT A, B, C
+		  FROM ${mdb.prefix}_FUNNY
+		<where>
+			<if test="a != null"> and a = #{a} </if>
+			<if test="b != null"> and b = #{b} </if>
+			<if test="c != null"> and c = #{c} </if>
+		</where>
+	</select>
+
+	<delete id="deleteList" parameterType="Funny">
+		DELETE FROM ${mdb.prefix}_FUNNY
+		<where>
+			<if test="a != null"> and a = #{a} </if>
+			<if test="b != null"> and b = #{b} </if>
+			<if test="c != null"> and c = #{c} </if>
+		</where>
+	</delete>
+
+	<update id="updateOne" parameterType="Funny">
+		UPDATE ${mdb.prefix}_FUNNY
+		<set>
+			<if test="b != null"> b = #{b}, </if>
+			<if test="b == null"> b = b, </if>
+			<if test="c != null"> c = #{c}, </if>
+			<if test="c == null"> c = c, </if>
+		</set>
+		<where>
+			and a = #{a}
+		</where>
+	</update>
+
+	<insert id="insertOne" parameterType="Funny">
+		INSERT INTO ${mdb.prefix}_FUNNY(
+		<trim prefix="" suffixOverrides=",">
+			<if test="a != null"> a, </if>
+			<if test="b != null"> b, </if>
+			<if test="c != null"> c, </if>
+		</trim>
+		) VALUES (
+		<trim prefix="" suffixOverrides=",">
+			<if test="a != null"> #{a}, </if>
+			<if test="b != null"> #{b}, </if>
+			<if test="c != null"> #{c}, </if>
+		</trim> )
+	</insert>
+
+	<insert id="insertListBatchDBFeatures" parameterType="Funny">
+		<if test="${mdb.dbType} == 1">
+			INSERT INTO ${mdb.prefix}_FUNNY
+			<foreach collection="list" item="item" index="index" separator=",">
+				<if test="index == 0">
+					(<trim prefix="" suffixOverrides=",">
+						<if test="item.a != null"> a, </if>
+						<if test="item.b != null"> b, </if>
+						<if test="item.c != null"> c, </if>
+					</trim>) VALUES
+				</if>
+				(<trim prefix="" suffixOverrides=",">
+					<if test="item.a != null"> #{item.a}, </if>
+					<if test="item.b != null"> #{item.b}, </if>
+					<if test="item.c != null"> #{item.c}, </if>
+				</trim>)
+			</foreach>
+		</if>
+		<if test="${mdb.dbType} == 2">
+			INSERT ALL
+			<foreach collection="list" item="item" index="index">
+				INTO ${mdb.prefix}_FUNNY (
+				<trim prefix="" suffixOverrides=",">
+					<if test="item.a != null"> a, </if>
+					<if test="item.b != null"> b, </if>
+					<if test="item.c != null"> c, </if>
+				</trim>
+				) VALUES (
+				<trim prefix="" suffixOverrides=",">
+					<if test="item.a != null"> #{item.a}, </if>
+					<if test="item.b != null"> #{item.b}, </if>
+					<if test="item.c != null"> #{item.c}, </if>
+				</trim> )
+			</foreach>
+			select * from dual
+		</if>
+	</insert>
+
+	<delete id="deleteOne" parameterType="Funny">
+		DELETE FROM ${mdb.prefix}_FUNNY
+		<where>
+			and a = #{a}
+		</where>
+	</delete>
+
+</mapper>

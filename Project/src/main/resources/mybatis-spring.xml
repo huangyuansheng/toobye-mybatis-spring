@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true"
+	xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+  		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd
+  		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!--数据源配置-->
+	<bean id="MDB" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${mdb.driver}" />
+		<property name="jdbcUrl" value="${mdb.url}" />
+		<property name="user" value="${mdb.user}" />
+		<property name="password" value="${mdb.password}" />
+		<!-- 初始化时获取的连接数，取值应在minPoolSize与maxPoolSize之间。 -->
+		<property name="initialPoolSize" value="${mdb.initialPoolSize}" />
+		<!-- 连接池中保留的最小连接数。 -->
+		<property name="minPoolSize" value="${mdb.minPoolSize}" />
+		<!-- 连接池中保留的最大连接数。-->
+		<property name="maxPoolSize" value="${mdb.maxPoolSize}" />
+		<!-- 最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。 -->
+		<property name="maxIdleTime" value="${mdb.maxIdleTime}" />
+		<!-- 当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。 -->
+		<property name="acquireIncrement" value="${mdb.acquireIncrement}" />
+		<!-- 每60秒检查所有连接池中的空闲连接。 -->
+		<property name="idleConnectionTestPeriod" value="60" />
+	</bean>
+
+	<!-- Spring管理Mybatis SqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="MDB" />
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="configurationProperties">
+        <props>
+            <prop key="mdb.prefix">${mdb.prefix}</prop>
+            <prop key="mdb.dbType">${mdb.dbType}</prop>
+        </props>
+    	</property>
+    	<property name="mapperLocations" value="classpath:/mapper/*.xml" />
+	</bean>
+	
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!--启用spring @Transactional注解 -->
+	<tx:annotation-driven/>
+
+	<!-- Spring管理Mybatis的事务 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!--注意：此处的数据源要与sqlSessionFactory中的dataSource相同 -->
+		<property name="dataSource" ref="MDB" />
+	</bean>
+
+</beans>
